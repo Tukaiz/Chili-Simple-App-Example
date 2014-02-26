@@ -1,3 +1,5 @@
 <h1>Editing page</h1>
 
 <%= render 'search_form' %>
+
+<iframe id="the_editor" src="<%= CGI.unescapeHTML(@url) %>"></iframe>
