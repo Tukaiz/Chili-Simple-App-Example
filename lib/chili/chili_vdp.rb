@@ -1,16 +1,16 @@
 module Chili
   class ChiliVdp
-   
+
     # ChiliVdp.new.authenticate
     attr_accessor :url, :client, :data, :result, :user, :password, :session_id
-     
-    def initialize(server = "http://dev1.chili-publish.com/CHILI/main.asmx?wsdl")
+
+    def initialize(server = "http://chili.my.dev/CHILI/main.asmx?wsdl")
       @url    = server
       @client = Savon::Client.new @url
       self.authenticate
       @data   = {}
     end
-     
+
     def authenticate
       @result = @client.generate_api_key do |soap|
        soap.body = {
@@ -24,12 +24,12 @@ module Chili
       # puts @result.to_hash[:generate_api_key_response][:generate_api_key_result].split(/key=\"/)[1].split('"')[0]
       self.session_id = @result.to_hash[:generate_api_key_response][:generate_api_key_result].split(/key=\"/)[1].split('"')[0]
     end
-     
+
     def resource_list
       @result = @client.request(:resource_list) do
         soap.body ={"apiKey" => @session_id}
       end
-      @result.to_hash  
+      @result.to_hash
     end
 
     def get_resource_tree
@@ -42,7 +42,7 @@ module Chili
       end
       @result.to_hash
     end
-      
+
     def get_document_editor
       @result = @client.generate_api_key do |soap|
         soap.body = { "wsdl:apiKey" => @session_id,
@@ -54,7 +54,7 @@ module Chili
     def get_document_url(document_id, workspace_id=nil, view_prefs=nil, constraints_id=nil)
       options = {"wsdl:apiKey" => @session_id,
                  "wsdl:itemID" => document_id}
-      
+
       options["wsdl:workSpaceID"] = workspace_id if workspace_id
       options["wsdl:viewPrefsID"] = view_prefs if view_prefs
       options["wsdl:constraintsID"] = constraints_id if constraints_id
@@ -67,5 +67,5 @@ module Chili
 
 
   end
-end 
- 
+end
+

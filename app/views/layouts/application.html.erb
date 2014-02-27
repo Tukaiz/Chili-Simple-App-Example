@@ -5,6 +5,36 @@
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
+  <script>
+  var editor;
+
+  function GetEditor()
+  {
+      if (document.getElementsByTagName("iframe").length > 0)
+      {
+        if (document.getElementsByTagName("iframe")[0].src != "")
+        {
+           frameWindow = document.getElementsByTagName("iframe")[0].contentWindow;
+           frameWindow.GetEditor(EditorLoaded);
+        }
+      }
+  }
+
+  function EditorLoaded(jsInterface)
+  {
+      editor = frameWindow.editorObject;
+  }
+
+  function Save() {
+    editor.ExecuteFunction("document","Save")
+  }
+
+  $(document).ready(function(){
+    document.domain = "my.dev";
+
+
+  })
+  </script>
 </head>
 <body>
   <% if content_for?(:header) %>
@@ -23,6 +53,6 @@
     <%= yield :footer %>
   <% else %>
     <%= render "shared/footer" %>
-  <% end -%>  
+  <% end -%>
 </body>
 </html>
