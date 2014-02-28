@@ -14,9 +14,9 @@ module Chili
     def authenticate
       @result = @client.generate_api_key do |soap|
        soap.body = {
-          "wsdl:environmentNameOrURL"=>"tukaiz",
-          "wsdl:userName"=>"tukaiz",
-          "wsdl:password" =>"tukaiz_dem0"
+          "wsdl:environmentNameOrURL" => "training",
+          "wsdl:userName" => "api",
+          "wsdl:password" => "api"
         }
       end
 
@@ -25,9 +25,13 @@ module Chili
       self.session_id = @result.to_hash[:generate_api_key_response][:generate_api_key_result].split(/key=\"/)[1].split('"')[0]
     end
 
+    def method_name
+
+    end
+
     def resource_list
       @result = @client.request(:resource_list) do
-        soap.body ={"apiKey" => @session_id}
+        soap.body = {"apiKey" => @session_id}
       end
       @result.to_hash
     end
@@ -51,6 +55,7 @@ module Chili
       end
     end
 
+
     def get_document_url(document_id, workspace_id=nil, view_prefs=nil, constraints_id=nil)
       options = {"wsdl:apiKey" => @session_id,
                  "wsdl:itemID" => document_id}
@@ -65,6 +70,52 @@ module Chili
 
     end
 
+    def set_workspace_admin(yes_or_no)
+      @result = @client.set_workspace_administration do |soap|
+        soap.body = { "wsdl:apiKey" => @session_id,
+                      "wsdl:setWorkspaceAdministration" => yes_or_no
+        }
+      end
+    end
+
+    def get_document_values(document_id)
+      @result = @client.document_get_variable_values do |soap|
+        soap.body = { "wsdl:apiKey" => @session_id,
+                      "wsdl:itemID" => document_id
+        }
+      end
+      @result.to_hash[:document_get_variable_values_response][:document_get_variable_values_result]
+    end
+
+    def get_document_definitions(document_id)
+      @result = @client.document_get_variable_definitions do |soap|
+        soap.body = { "wsdl:apiKey" => @session_id,
+                      "wsdl:itemID" => document_id
+        }
+      end
+      @result.to_hash[:document_get_variable_definitions_response][:document_get_variable_definitions_result]
+    end
+
+    def export_pdf(document_id, xml_settings)
+      @result = @client.document_create_pdf do |soap|
+        soap.body = { "wsdl:apiKey" => @session_id,
+                      "wsdl:itemID" => document_id,
+                      "wsdl:settingsXML" => xml_settings,
+                      "wsdl:taskPriority" => 1
+        }
+      end
+      data = Nokogiri::XML(@result.to_hash[:document_create_pdf_response][:document_create_pdf_result])
+      @task_id = data.children.first.attributes["id"].value
+    end
+
+    def task_status(task_id)
+      @result = @client.task_get_status do |soap|
+        soap.body = { "wsdl:apiKey" => @session_id,
+                      "wsdl:taskID" => task_id
+        }
+      end
+      binding.pry
+    end
 
   end
 end

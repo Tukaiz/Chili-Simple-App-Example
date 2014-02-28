@@ -1,8 +1,9 @@
 ChiliPublishing::Application.routes.draw do
-  namespace :chili_publisher do 
+  namespace :chili_publisher do
     get 'home'
     get 'search'
     get 'editor'
+    get 'pdf'
   end
 
   # The priority is based upon order of creation:

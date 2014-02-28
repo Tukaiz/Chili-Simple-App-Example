@@ -1,5 +1,75 @@
 <h1>Editing page</h1>
 
-<%= render 'search_form' %>
-<button onclick="Save()">Save</button>
-<iframe id="the_editor" style="width:100%; height:600px;" onload="GetEditor()" src="<%= CGI.unescapeHTML(@url) %>&d=my.dev"></iframe>
+<div id="chili-form-input">
+  <% @attributes.each_with_index do |attribute, index| %>
+    <p>
+      <label><%= attribute.attributes["name"].value %></label>
+      <input type="text" value="<%= attribute.attributes['value'].value %>" onchange="SetVariableValue(<%= index %>, this, '');">>
+    </p>
+  <% end %>
+  <button onclick="Save()">Save</button>
+</div>
+
+<iframe id="the_editor" style="width:100%; height:600px;" onload="GetEditor()" src="<%= CGI.unescapeHTML(@url) %>&d=my.dev&initialUserView=user"></iframe>
+
+<script>
+  document.domain = "my.dev";
+
+  var frameWindow = null;
+  var editor;
+
+  // string res = ChiliWebService.ws.DocumentGetEditorURL(ChiliWebService.key, docID, wsID, vpID, cID, chkViewer.Checked,chkAnonymous.Checked);
+  // XmlDocument resXml = new XmlDocument();
+  // resXml.LoadXml(res);
+
+  // string url = resXml.DocumentElement.GetAttribute("url");
+  // url += "&d=chili-api.com";
+
+  function GetEditor() {
+    if (document.getElementsByTagName("iframe").length > 0) {
+      if (document.getElementsByTagName("iframe")[0].src != "") {
+         frameWindow = document.getElementsByTagName("iframe")[0].contentWindow;
+         frameWindow.GetEditor(EditorLoaded);
+      }
+    }
+  }
+
+  function EditorLoaded(jsInterface) {
+    editor = frameWindow.editorObject;
+    editor.AddListener("DocumentSaved");
+  }
+
+
+  function OnEditorEvent(type,targetID) {
+    switch (type){
+    case "DocumentFullyLoaded":
+      //DO MAGIC
+      break;
+    case "SelectedPageChanged":
+      ShowSelectedPage();
+      break;
+    case "DocumentSaved":
+      window.location = "<%= chili_publisher_pdf_url(params[:id]) %>";
+    }
+  }
+
+  function SetVariableValue(varNum,target,targetType) {
+    var val = '';
+    switch (targetType) {
+      case 'checkbox':
+        if (target.checked)
+            val = 'true';
+        else
+            val = 'false';
+      break;
+      case 'list':
+        val = target.options[target.selectedIndex].value;
+      break;
+      default:
+        val = target.value;
+    }
+
+    window.editor.SetProperty("document.variables[" + varNum + "]","value",val);
+  }
+
+</script>
