@@ -9,14 +9,13 @@ class ChiliPublisherController < ApplicationController
     items = @xml.xpath("//item[@isFolder='false']")
 
     @documents = items[0..10].map do |item|
-
       link = @chili_connection.get_document_url(item.attribute('id'), "1e61933f-b0bf-4f12-be2c-4fb77e60d47e")
 
       Chili::ChiliDocument.new(
-        :name=>item.attribute('name'),
-        :id=>item.attribute('id'),
+        :name => item.attribute('name'),
+        :id   => item.attribute('id'),
         :icon => item.attribute('iconURL'),
-        :url => link
+        :url  => link
       )
     end
   end

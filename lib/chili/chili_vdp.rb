@@ -1,5 +1,8 @@
 module Chili
   class ChiliVdp
+    #  hosts file settings for DEV
+    # 127.0.0.1 my.dev
+    # 206.152.228.225 chili.my.dev
 
     # ChiliVdp.new.authenticate
     attr_accessor :url, :client, :data, :result, :user, :password, :session_id
@@ -15,8 +18,8 @@ module Chili
       @result = @client.generate_api_key do |soap|
        soap.body = {
           "wsdl:environmentNameOrURL" => "training",
-          "wsdl:userName" => "api",
-          "wsdl:password" => "api"
+          "wsdl:userName"             => "api",
+          "wsdl:password"             => "api"
         }
       end
 
@@ -38,11 +41,11 @@ module Chili
 
     def get_resource_tree
       @result = @client.resource_get_tree do |soap|
-        soap.body = {"wsdl:apiKey" => @session_id,
-                             "wsdl:resourceName"=>"Documents",
-                             "wsdl:parentFolder"=>"",
-                             "wsdl:includeSubDirectories"=>true,
-                             "wsdl:includeFiles" => true}
+        soap.body = {"wsdl:apiKey"                => @session_id,
+                     "wsdl:resourceName"          => "Documents",
+                     "wsdl:parentFolder"          => "",
+                     "wsdl:includeSubDirectories" => true,
+                     "wsdl:includeFiles"          => true}
       end
       @result.to_hash
     end
@@ -60,8 +63,8 @@ module Chili
       options = {"wsdl:apiKey" => @session_id,
                  "wsdl:itemID" => document_id}
 
-      options["wsdl:workSpaceID"] = workspace_id if workspace_id
-      options["wsdl:viewPrefsID"] = view_prefs if view_prefs
+      options["wsdl:workSpaceID"]   = workspace_id if workspace_id
+      options["wsdl:viewPrefsID"]   = view_prefs if view_prefs
       options["wsdl:constraintsID"] = constraints_id if constraints_id
       @result = @client.document_get_editor_url do |soap|
         soap.body = options
@@ -72,7 +75,7 @@ module Chili
 
     def set_workspace_admin(yes_or_no)
       @result = @client.set_workspace_administration do |soap|
-        soap.body = { "wsdl:apiKey" => @session_id,
+        soap.body = { "wsdl:apiKey"                     => @session_id,
                       "wsdl:setWorkspaceAdministration" => yes_or_no
         }
       end
@@ -98,9 +101,9 @@ module Chili
 
     def export_pdf(document_id, xml_settings)
       @result = @client.document_create_pdf do |soap|
-        soap.body = { "wsdl:apiKey" => @session_id,
-                      "wsdl:itemID" => document_id,
-                      "wsdl:settingsXML" => xml_settings,
+        soap.body = { "wsdl:apiKey"       => @session_id,
+                      "wsdl:itemID"       => document_id,
+                      "wsdl:settingsXML"  => xml_settings,
                       "wsdl:taskPriority" => 1
         }
       end
