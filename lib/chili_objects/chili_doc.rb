@@ -17,7 +17,6 @@ module ChiliDoc
     attribute :doc_id, String, :tag => 'id'
     attribute :is_folder, Boolean, :tag => 'isFolder'
     attribute :icon_url, String, :tag => 'iconURL'
-    attribute :customize_url, String, :tag => ''
   end
 
 
