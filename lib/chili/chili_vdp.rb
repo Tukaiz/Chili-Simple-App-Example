@@ -40,14 +40,13 @@ module Chili
     end
 
     def get_resource_tree
-      result = @client.resource_get_tree do |soap|
-        soap.body = {"wsdl:apiKey"                => @session_id,
-                     "wsdl:resourceName"          => "Documents",
-                     "wsdl:parentFolder"          => "",
-                     "wsdl:includeSubDirectories" => true,
-                     "wsdl:includeFiles"          => true}
-      end
-      ChiliService::ResourceTree.parse(result.to_hash[:resource_get_tree_response][:resource_get_tree_result])
+      hash = { "wsdl:apiKey"                => @session_id,
+               "wsdl:resourceName"          => "Documents",
+               "wsdl:parentFolder"          => "",
+               "wsdl:includeSubDirectories" => true,
+               "wsdl:includeFiles"          => true }
+
+      result = send_msg('resource_get_tree', hash, ChiliService::ResourceTree)
     end
 
     def get_document_editor
@@ -82,12 +81,9 @@ module Chili
     end
 
     def get_document_values(document_id)
-      result = @client.document_get_variable_values do |soap|
-        soap.body = { "wsdl:apiKey" => @session_id,
-                      "wsdl:itemID" => document_id
-        }
-      end
-      ChiliDoc::GetDocVals.parse(result.to_hash[:document_get_variable_values_response][:document_get_variable_values_result])
+      hash = { "wsdl:apiKey" => @session_id,
+               "wsdl:itemID" => document_id }
+      result = send_msg('document_get_variable_values', hash, ChiliDoc::GetDocVals)
     end
 
     def get_document_definitions(document_id)
@@ -118,6 +114,18 @@ module Chili
         }
       end
       binding.pry
+    end
+
+
+    def send_msg(action, hash_obj, return_obj = false)
+      result = @client.send("#{action}".to_sym) do |soap|
+        soap.body = hash_obj
+      end
+      if return_obj
+        return return_obj.parse(result.to_hash["#{action}_response".to_sym]["#{action}_result".to_sym])
+      else
+        result
+      end
     end
 
   end
