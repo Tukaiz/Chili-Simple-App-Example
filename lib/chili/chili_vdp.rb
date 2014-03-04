@@ -40,14 +40,14 @@ module Chili
     end
 
     def get_resource_tree
-      @result = @client.resource_get_tree do |soap|
+      result = @client.resource_get_tree do |soap|
         soap.body = {"wsdl:apiKey"                => @session_id,
                      "wsdl:resourceName"          => "Documents",
                      "wsdl:parentFolder"          => "",
                      "wsdl:includeSubDirectories" => true,
                      "wsdl:includeFiles"          => true}
       end
-      @result.to_hash[:resource_get_tree_response][:resource_get_tree_result]
+      ChiliService::ResourceTree.parse(result.to_hash[:resource_get_tree_response][:resource_get_tree_result])
     end
 
     def get_document_editor
@@ -82,12 +82,12 @@ module Chili
     end
 
     def get_document_values(document_id)
-      @result = @client.document_get_variable_values do |soap|
+      result = @client.document_get_variable_values do |soap|
         soap.body = { "wsdl:apiKey" => @session_id,
                       "wsdl:itemID" => document_id
         }
       end
-      @result.to_hash[:document_get_variable_values_response][:document_get_variable_values_result]
+      ChiliDoc::GetDocVals.parse(result.to_hash[:document_get_variable_values_response][:document_get_variable_values_result])
     end
 
     def get_document_definitions(document_id)

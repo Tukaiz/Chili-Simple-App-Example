@@ -2,8 +2,7 @@ class ChiliPublisherController < ApplicationController
   before_filter :initialize_chili_vdp
   def home
     # get 10 most recent documents !! FOR TESTING USES ONLY !!
-    raw_xml = @chili_connection.get_resource_tree()
-    directories = ChiliService::ResourceTree.parse(raw_xml)
+    directories = @chili_connection.get_resource_tree()
 
     @documents = []
     cnt = 0
@@ -31,8 +30,7 @@ class ChiliPublisherController < ApplicationController
   def editor
     @url = params[:url]
     @chili_connection.set_workspace_admin("false")
-    raw_doc_values = @chili_connection.get_document_values(params[:id])
-    @document_vars = ChiliDoc::GetDocVals.parse(raw_doc_values)
+    @document_vars = @chili_connection.get_document_values(params[:id])
   end
 
   def pdf
