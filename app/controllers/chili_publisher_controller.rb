@@ -1,22 +1,27 @@
 class ChiliPublisherController < ApplicationController
   before_filter :initialize_chili_vdp
   def home
-    # get 10 most recent documents
-    response = @chili_connection.get_resource_tree()
-    raw_xml = response[:resource_get_tree_response][:resource_get_tree_result]
-    @xml = Nokogiri::XML(raw_xml)
+    # get 10 most recent documents !! FOR TESTING USES ONLY !!
+    raw_xml = @chili_connection.get_resource_tree()
+    directories = ChiliService::ResourceTree.parse(raw_xml)
 
-    items = @xml.xpath("//item[@isFolder='false']")
-
-    @documents = items[0..10].map do |item|
-      link = @chili_connection.get_document_url(item.attribute('id'), "1e61933f-b0bf-4f12-be2c-4fb77e60d47e")
-
-      Chili::ChiliDocument.new(
-        :name => item.attribute('name'),
-        :id   => item.attribute('id'),
-        :icon => item.attribute('iconURL'),
-        :url  => link
-      )
+    @documents = []
+    cnt = 0
+    directories.each do |dir|
+      break if cnt == 9
+      dir.documents.each do |doc|
+        break if cnt == 9
+        if doc.is_folder == false and !doc.doc_id.blank?
+          link = @chili_connection.get_document_url(doc.doc_id, "1e61933f-b0bf-4f12-be2c-4fb77e60d47e")
+          @documents += [Chili::ChiliDocument.new(
+            :name => doc.name,
+            :id   => doc.doc_id,
+            :icon => doc.icon_url,
+            :url  => link
+          )]
+          cnt += 1
+        end
+      end
     end
   end
 
@@ -27,9 +32,7 @@ class ChiliPublisherController < ApplicationController
     @url = params[:url]
     @chili_connection.set_workspace_admin("false")
     raw_doc_values = @chili_connection.get_document_values(params[:id])
-    xml = Nokogiri::XML(raw_doc_values)
-    @attributes = xml.children.first.children
-# binding.pry
+    @document_vars = ChiliDoc::GetDocVals.parse(raw_doc_values)
   end
 
   def pdf

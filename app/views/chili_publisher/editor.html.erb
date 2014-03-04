@@ -1,10 +1,10 @@
 <h1>Editing page</h1>
 
 <div id="chili-form-input">
-  <% @attributes.each_with_index do |attribute, index| %>
+  <% @document_vars.each_with_index do |var, index| %>
     <p>
-      <label><%= attribute.attributes["name"].value %></label>
-      <input type="text" value="<%= attribute.attributes['value'].value %>" onchange="SetVariableValue(<%= index %>, this, '');">>
+      <label><%= var.name %></label>
+      <input type="text" value="<%= var.value %>" onchange="SetVariableValue(<%= index %>, this, '');">>
     </p>
   <% end %>
   <button onclick="Save()">Save</button>

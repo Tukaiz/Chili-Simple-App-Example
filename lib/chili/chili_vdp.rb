@@ -47,7 +47,7 @@ module Chili
                      "wsdl:includeSubDirectories" => true,
                      "wsdl:includeFiles"          => true}
       end
-      @result.to_hash
+      @result.to_hash[:resource_get_tree_response][:resource_get_tree_result]
     end
 
     def get_document_editor
