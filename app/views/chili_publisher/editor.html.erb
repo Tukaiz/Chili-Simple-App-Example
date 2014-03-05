@@ -4,7 +4,7 @@
   <% @document_vars.each_with_index do |var, index| %>
     <p>
       <label><%= var.name %></label>
-      <input type="text" value="<%= var.value %>" onchange="SetVariableValue(<%= index %>, this, '');">>
+      <input type="text" value="<%= var.value %>" onchange="SetVariableValue(<%= index %>, this, '');">
     </p>
   <% end %>
   <button onclick="Save()">Save</button>
