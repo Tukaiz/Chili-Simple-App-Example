@@ -30,6 +30,7 @@ module ChiliService
     include HappyMapper
     tag 'task'
 
+    attribute :task_id, String, :tag => 'id'
     attribute :finished, String
     attribute :started, String
     attribute :succeeded, String

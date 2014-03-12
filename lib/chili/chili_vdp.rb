@@ -13,11 +13,8 @@ module Chili
     end
 
     def authenticate
-      hash = { "environmentNameOrURL" => "training",
-               "userName"             => "api",
-               "password"             => "api" }
-      result = send_msg('generate_api_key', hash, ChiliService::Authentication)
-      self.session_id = result.key
+      hash = { "environmentNameOrURL"=>"training", "userName"=>"api", "password"=>"api" }
+      self.session_id = send_msg('generate_api_key', hash, ChiliService::Authentication).key
     end
 
     def get_resource_tree
@@ -54,47 +51,35 @@ module Chili
     end
 
     def get_document_url(document_id, workspace_id=nil, view_prefs=nil, constraints_id=nil)
-      hash = { "apiKey" => @session_id,
-               "itemID" => document_id }
-
-      hash["workSpaceID"]   = workspace_id if workspace_id
-      hash["viewPrefsID"]   = view_prefs if view_prefs
+      hash = { "apiKey" => @session_id, "itemID" => document_id }
+      hash["workSpaceID"]   = workspace_id   if workspace_id
+      hash["viewPrefsID"]   = view_prefs     if view_prefs
       hash["constraintsID"] = constraints_id if constraints_id
       send_msg('document_get_editor_url', hash, ChiliService::UrlInfo).url
     end
 
     def set_workspace_admin(yes_or_no)
-      hash = { "apiKey"                     => @session_id,
-               "setWorkspaceAdministration" => yes_or_no }
+      hash = { "apiKey"=>@session_id, "setWorkspaceAdministration"=>yes_or_no }
       send_msg('set_workspace_administration', hash)
     end
 
     def get_document_values(document_id)
-      hash = { "apiKey" => @session_id,
-               "itemID" => document_id }
+      hash = { "apiKey"=>@session_id, "itemID"=>document_id }
       send_msg('document_get_variable_values', hash, ChiliDoc::GetDocVals)
     end
 
     def get_document_definitions(document_id)
-      hash = { "apiKey" => @session_id,
-               "itemID" => document_id }
+      hash = { "apiKey"=>@session_id, "itemID"=>document_id }
       send_msg('document_get_variable_definitions', hash)
     end
 
     def export_pdf(document_id, xml_settings)
-      hash = { "apiKey"       => @session_id,
-               "itemID"       => document_id,
-               "settingsXML"  => xml_settings,
-               "taskPriority" => 1 }
-      result = send_msg('document_create_pdf', hash)
-
-      data = Nokogiri::XML(result)
-      @task_id = data.children.first.attributes["id"].value
+      hash = { "apiKey"=>@session_id, "itemID"=>document_id, "settingsXML"=>xml_settings, "taskPriority"=>1 }
+      send_msg('document_create_pdf', hash, ChiliService::Task).task_id
     end
 
     def task_status(task_id)
-      hash = { "apiKey" => @session_id,
-               "taskID" => task_id }
+      hash = { "apiKey"=>@session_id, "taskID"=>task_id }
       send_msg('task_get_status', hash, ChiliService::Task)
     end
 
