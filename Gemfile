@@ -8,8 +8,8 @@ gem 'rails', '3.2.8'
 gem 'sqlite3'
 gem 'savon', '0.7.8' # savonrb version 1
 gem 'nokogiri'
-
-gem 'happymapper'
+#gem 'happymapper'
+gem 'nokogiri-happymapper', :require => 'happymapper'
 
 gem 'pry'
 # Gems used only for assets and not required

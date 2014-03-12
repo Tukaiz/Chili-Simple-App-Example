@@ -5,10 +5,10 @@
   <ul class="document_list" >
     <% @documents.each do |d| %>
     <li class="document" >
-      <img src="http://chili.my.dev/CHILI/<%= d.icon %>" />
-      <%= d.name%>
+      <img src="http://chili.my.dev/CHILI/<%= d[:icon_url] %>" />
+      <%= d[:name]%>
 
-      <%= link_to "Edit", chili_publisher_editor_path(:url=>CGI.unescapeHTML(d.url), :id => d.id) %>
+      <%= link_to "Edit", chili_publisher_editor_path(:id => d[:doc_id], :doc => d[:name]) %>
     </li>
     <% end -%>
   </ul>
