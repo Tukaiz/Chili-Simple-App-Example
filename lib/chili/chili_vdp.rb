@@ -12,17 +12,13 @@ module Chili
       self.authenticate
     end
 
-    def authenticate
-      hash = { "environmentNameOrURL"=>"training", "userName"=>"api", "password"=>"api" }
+    def authenticate(env_name_or_url='training', user_name='api', password='api')
+      hash = { 'environmentNameOrURL'=>env_name_or_url, 'userName'=>user_name, 'password'=> password}
       self.session_id = send_msg('generate_api_key', hash, ChiliService::Authentication).key
     end
 
-    def get_resource_tree
-      hash = { "apiKey"                => @session_id,
-               "resourceName"          => "Documents",
-               "parentFolder"          => "",
-               "includeSubDirectories" => true,
-               "includeFiles"          => true }
+    def get_resource_tree(resource_name='Documents', parent_folder='', sub_dirs=true, files=true)
+      hash = { 'apiKey'=>@session_id, 'resourceName'=>resource_name, 'parentFolder'=>parent_folder, 'includeSubDirectories'=>sub_dirs, 'includeFiles'=>files}
       send_msg('resource_get_tree', hash, ChiliService::ResourceTree)
     end
 
@@ -31,11 +27,7 @@ module Chili
     end
 
     def copy_or_move_resource(copy_or_move, resource_name, item_id, path, new_name, return_obj = false)
-      hash = { "apiKey"       => @session_id,
-               "resourceName" => resource_name,
-               "itemID"       => item_id,
-               "folderPath"   => path,
-               "newName"      => new_name }
+      hash = { "apiKey"=> @session_id, "resourceName"=>resource_name, "itemID"=>item_id, "folderPath"=>path, "newName"=>new_name }
       copy_or_move == 'copy' ? hash["folderPath"] = path : hash["newFolderPath"] = path
       send_msg("resource_item_#{copy_or_move}", hash, return_obj)
     end

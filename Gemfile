@@ -6,10 +6,9 @@ gem 'rails', '3.2.8'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
-gem 'savon', '0.7.8' # savonrb version 1
-gem 'nokogiri'
-#gem 'happymapper'
-gem 'nokogiri-happymapper', :require => 'happymapper'
+
+gem 'happymapper' ### ? Why do I need only this one in rails 3?
+gem 'chili'
 
 gem 'pry'
 # Gems used only for assets and not required
